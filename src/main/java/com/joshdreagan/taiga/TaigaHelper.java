@@ -43,6 +43,7 @@ public final class TaigaHelper {
     String description = (String) userStoryMap.get("description");
     List<Map<String, Object>> history = (List<Map<String, Object>>) userStoryMap.get("history");
     List<String> tags =(List<String>) userStoryMap.get("tags");
+    String status = (String) userStoryMap.get("status");
 
     // Build assignees as an order-preserving set: assigned_to first, then assigned_users
     LinkedHashSet<String> assigneesSet = new LinkedHashSet<>();
@@ -82,6 +83,7 @@ public final class TaigaHelper {
     card.setAttachments(cardAttachments);
     card.setComments(cardComments);
     card.setTags(new HashSet<>(tags));
+    card.setStatus(status);
     return card;
   }
 

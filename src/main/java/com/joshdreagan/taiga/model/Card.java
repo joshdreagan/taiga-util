@@ -17,6 +17,7 @@ public class Card {
   private List<Attachment> attachments;
   private List<Comment> comments;
   private Set<String> tags;
+  private String status;
 
   public Integer getId() {
     return id;
@@ -82,6 +83,14 @@ public class Card {
     this.tags = tags;
   }
 
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -93,6 +102,7 @@ public class Card {
       .append("attachments", attachments)
       .append("comments", comments)
       .append("tags", tags)
+      .append("status", status)
       .toString();
   }
 }

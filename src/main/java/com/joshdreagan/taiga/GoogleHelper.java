@@ -50,7 +50,7 @@ public final class GoogleHelper {
 
   private static final List<String> AUTHORIZATION_CODE_FLOW_SCOPES = Arrays.asList(DriveScopes.DRIVE, DocsScopes.DOCUMENTS);
   private static final int LOCAL_SERVER_RECEIVER_PORT = 8888;
-  private static final String OAUTH_APPLICATION_NAME = "taiga-importer";
+  private static final String OAUTH_APPLICATION_NAME = "taiga-util";
 
   private final Path credentialsFile;
   private final String oauthUser;
@@ -399,6 +399,19 @@ public final class GoogleHelper {
       index = insertText.apply("\n", index);
     }
 
+    // Section: Status (heading 2)
+    hStart = index;
+    index = insertText.apply("Status\n", index);
+    hEnd = index;
+    applyHeading.accept("HEADING_2", new int[]{hStart, hEnd});
+
+    String status = card.getStatus() != null ? card.getStatus() : "";
+    if (!status.isBlank()) {
+      index = insertText.apply(status + "\n\n", index);
+    } else {
+      index = insertText.apply("(none)\n\n", index);
+    }
+
     // Section: Tags (heading 2)
     hStart = index;
     index = insertText.apply("Tags\n", index);
@@ -452,6 +465,24 @@ public final class GoogleHelper {
       }
       int attachEndForBullets = index;
       bulletize.accept(new int[]{attachStartForBullets, attachEndForBullets});
+      index = insertText.apply("\n", index);
+    } else {
+      index = insertText.apply("(none)\n\n", index);
+    }
+
+    // Section: Assignees (heading 2)
+    hStart = index;
+    index = insertText.apply("Assignees\n", index);
+    hEnd = index;
+    applyHeading.accept("HEADING_2", new int[]{hStart, hEnd});
+
+    int assignStartForBullets = index;
+    if (card.getAssignees() != null && !card.getAssignees().isEmpty()) {
+      for (String a : card.getAssignees()) {
+        index = insertText.apply(a + "\n", index);
+      }
+      int assignEndForBullets = index;
+      bulletize.accept(new int[]{assignStartForBullets, assignEndForBullets});
       index = insertText.apply("\n", index);
     } else {
       index = insertText.apply("(none)\n\n", index);

@@ -1,72 +1,53 @@
-# taiga-importer
+# taiga-util
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## Prerequisites
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+Create a Google project, enable API access, and create a OAuth2 client. You can use the following "Getting Started" guides as a reference:
 
-## Running the application in dev mode
+- [Google Drive - Getting Started](https://developers.google.com/workspace/drive/api/quickstart/java)
+- [Google Docs - Getting Started](https://developers.google.com/workspace/docs/api/quickstart/java)
 
-You can run your application in dev mode that enables live coding using:
+Use "taiga-util" as the application name.
 
-```shell script
-mvn quarkus:dev
+
+## Building
+
+```
+mvn clean package
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+## Running
 
-## Packaging and running the application
+There are 2 commands: 'split' and 'googlify'. Run the help command for more info.
 
-The application can be packaged using:
-
-```shell script
-mvn package
+```
+java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar --help
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+You'll want to start by running 'split' on the raw Taiga export JSON file. This will generate a file for each user story (aka card).
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+Example:
 
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-mvn package -Dquarkus.package.jar.type=uber-jar
+```
+java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar split --output-directory ./output ./taiga-raw-export.json
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+You can check the difference between two exports by running `diff -qr oldDir newDir`. This will give you a list of files that have changed. That way you don't have to run the 'gooflify' command and reprocess every card. You can just reprocess the new or changed cards.
 
-## Creating a native executable
+Next, you'll want to run 'gooflify' on each card.
 
-You can create a native executable using:
+Example:
 
-```shell script
-mvn package -Dnative
+```
+java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar gooflify --credentials ./credentials.json --oauth-user "oauth-user" --folder-id "1oyQgF5i_Avi1pfZntAJNgAx-iaskQfSj" ./output/1.json
 ```
 
+You can pass multiple files to 'gooflify' at once. You can do so either manually, or using something like `xargs`.
 
-You can then execute your native executable with: `./target/taiga-importer-1.0-SNAPSHOT-runner`
+Example:
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- Picocli ([guide](https://quarkus.io/guides/picocli)): Develop command line applications with Picocli
-
-## Provided Code
-
-### Picocli Example
-
-Hello and goodbye are civilization fundamentals. Let's not forget it with this example picocli application by changing
-the <code>command</code> and <code>parameters</code>.
-
-[Related guide section...](https://quarkus.io/guides/picocli#command-line-application-with-multiple-commands)
-
-Also for picocli applications the dev mode is supported. When running dev mode, the picocli application is executed and
-on press of the Enter key, is restarted.
-
-As picocli applications will often require arguments to be passed on the commandline, this is also possible in dev mode
-via:
-
-```shell script
-mvn quarkus:dev -Dquarkus.args='Quarky'
 ```
+find ./output -type f -iname '10???' -print0 | xargs -0 java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar gooflify --credentials ./credentials.json --oauth-user "oauth-user" --folder-id "1oyQgF5i_Avi1pfZntAJNgAx-iaskQfSj"
+```
+
+Each doc will take a few seconds to process/create. So it's best to run small batches of files at a time.

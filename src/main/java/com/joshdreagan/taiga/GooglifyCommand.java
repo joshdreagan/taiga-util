@@ -9,7 +9,6 @@ import picocli.CommandLine.Parameters;
 
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Command(name = "googlify", mixinStandardHelpOptions = true, description = "Converts the specified Taiga cards into Google Docs")
@@ -29,7 +28,7 @@ public class GooglifyCommand implements Runnable {
 
   // The OAuth2 user (required)
   @Option(names = "--oauth-user", paramLabel = "<oauth-user>", required = true,
-    description = "The OAuth2 user")
+    description = "The Google OAuth2 user")
   String oauthUser;
 
   // Force flag with default false
@@ -37,7 +36,7 @@ public class GooglifyCommand implements Runnable {
   boolean overwrite;
 
   // Folder ID string parameter
-  @Option(names = "--folder-id", paramLabel = "<folder-id>", required = true, description = "Folder ID")
+  @Option(names = "--folder-id", paramLabel = "<folder-id>", required = true, description = "The parent Google Drive folder ID to create documents in")
   String folderId;
 
   // Temporary working directory with default to system temp + project name
