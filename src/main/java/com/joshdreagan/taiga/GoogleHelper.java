@@ -40,6 +40,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public final class GoogleHelper {
 
@@ -265,6 +270,51 @@ public final class GoogleHelper {
     return result.getId();
   }
 
+  public String fixTaigaLinks(String inputText, Map<String, String> attachmentMap) {
+    if (inputText == null || inputText.isEmpty() || attachmentMap == null || attachmentMap.isEmpty()) {
+      return inputText;
+    }
+
+    // Find URLs that point to media-protected.taiga.io and replace them if the last path segment
+    // (decoded) matches a key in attachmentMap.
+    Pattern urlPattern = Pattern.compile("https?://media-protected\\.taiga\\.io[^\\s)]+", Pattern.CASE_INSENSITIVE);
+    Matcher matcher = urlPattern.matcher(inputText);
+    StringBuffer sb = new StringBuffer();
+
+    while (matcher.find()) {
+      String fullUrl = matcher.group();
+
+      // Parse URI to get the path and last segment
+      URI uri = URI.create(fullUrl);
+      String path = uri.getPath();
+      String lastSegment = null;
+      if (path != null && !path.isEmpty()) {
+        int lastSlash = path.lastIndexOf('/') + 1;
+        if (lastSlash >= 0 && lastSlash < path.length()) {
+          lastSegment = path.substring(lastSlash);
+        }
+      }
+
+      if (lastSegment != null && !lastSegment.isEmpty()) {
+        // Remove trailing slashes, if any
+        while (lastSegment.endsWith("/")) {
+          lastSegment = lastSegment.substring(0, lastSegment.length() - 1);
+        }
+        // Decode percent-encoding
+        String decodedName = URLDecoder.decode(lastSegment, StandardCharsets.UTF_8);
+        String replacement = attachmentMap.get(decodedName);
+        if (replacement != null && !replacement.isEmpty()) {
+          matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+          continue;
+        }
+      }
+      // No replacement; keep the original URL
+      matcher.appendReplacement(sb, Matcher.quoteReplacement(fullUrl));
+    }
+    matcher.appendTail(sb);
+    return sb.toString();
+  }
+
   public String createDocument(Card card, String parentFolderId, boolean overwrite) throws IOException {
     if (!initialized) throw new IllegalStateException("GoogleHelper has not been initialized");
 
@@ -374,6 +424,7 @@ public final class GoogleHelper {
     applyHeading.accept("HEADING_2", new int[]{hStart, hEnd});
 
     String description = card.getDescription() != null ? card.getDescription() : "";
+    description = fixTaigaLinks(description, attachmentUrls);
     if (!description.isBlank()) {
       index = insertText.apply(description + "\n\n", index);
     } else {
@@ -428,7 +479,7 @@ public final class GoogleHelper {
         int bdyStart = index;
         index = insertText.apply("\n", index);
         String body = c.getComment() != null ? c.getComment() : "";
-        //body = body.replaceAll("([^!?])\\[(\\S*)\\]\\((\\S*)\\)", "$1$2");
+        body = fixTaigaLinks(body, attachmentUrls);
         index = insertText.apply(body + "\n\n", index);
         TextStyle unbold = new TextStyle().setBold(false);
         applyTextStyle.accept(unbold, new int[]{bdyStart, bdyStart + body.length() + 3});

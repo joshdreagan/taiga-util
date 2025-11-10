@@ -9,6 +9,7 @@ import picocli.CommandLine.Parameters;
 
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Command(name = "googlify", mixinStandardHelpOptions = true, description = "Converts the specified Taiga cards into Google Docs")
