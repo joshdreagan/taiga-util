@@ -1,5 +1,7 @@
 # taiga-util
 
+This utility can be used to convert cards from a Taiga export JSON file into Google Docs.
+
 ## Prerequisites
 
 Create a Google project, enable API access, and create a OAuth2 client. You can use the following "Getting Started" guides as a reference:
