@@ -11,7 +11,7 @@ public class Card {
 
   private Integer id;
   private String subject;
-  private String description;
+  private String details;
   private SequencedSet<String> assignees;
   private Instant created;
   private List<Attachment> attachments;
@@ -35,12 +35,12 @@ public class Card {
     this.subject = subject;
   }
 
-  public String getDescription() {
-    return description;
+  public String getDetails() {
+    return details;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setDetails(String details) {
+    this.details = details;
   }
 
   public SequencedSet<String> getAssignees() {
@@ -96,7 +96,7 @@ public class Card {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
       .append("id", id)
       .append("subject", subject)
-      .append("description", description)
+      .append("details", details)
       .append("assignees", assignees)
       .append("created", created)
       .append("attachments", attachments)

@@ -77,7 +77,7 @@ public final class TaigaHelper {
     Card card = new Card();
     card.setId(ref);
     card.setSubject(subject);
-    card.setDescription(description);
+    card.setDetails(description);
     card.setCreated(created_date);
     card.setAssignees(assigneesSet);
     card.setAttachments(cardAttachments);

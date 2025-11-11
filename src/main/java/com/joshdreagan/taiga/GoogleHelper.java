@@ -270,7 +270,7 @@ public final class GoogleHelper {
     return result.getId();
   }
 
-  public String fixTaigaLinks(String inputText, Map<String, String> attachmentMap) {
+  private String fixTaigaLinks(String inputText, Map<String, String> attachmentMap) {
     if (inputText == null || inputText.isEmpty() || attachmentMap == null || attachmentMap.isEmpty()) {
       return inputText;
     }
@@ -436,7 +436,7 @@ public final class GoogleHelper {
     hEnd = index;
     applyHeading.accept("HEADING_2", new int[]{hStart, hEnd});
 
-    String description = card.getDescription() != null ? card.getDescription() : "";
+    String description = card.getDetails() != null ? card.getDetails() : "";
     description = fixTaigaLinks(description, attachmentUrls);
     if (!description.isBlank()) {
       index = insertText.apply(description + "\n\n", index);
