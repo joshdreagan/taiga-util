@@ -12,11 +12,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Base64;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +22,7 @@ public final class MarkdownHelper {
 
     // Build title "id: subject"
     String title = card.getId() + (card.getSubject() != null && !card.getSubject().isEmpty() ? ": " + card.getSubject() : "");
-    String sanitizedName = title.replaceAll("[^a-zA-Z0-9_]", "_");
+    String sanitizedName = sanitizeFilename(title);
 
     Path mdFile = parentDirectory.resolve(sanitizedName + ".md");
 
@@ -42,7 +38,8 @@ public final class MarkdownHelper {
         }
         for (Attachment att : attachments) {
           if (att == null || att.getName() == null) continue;
-          Path out = attachmentsDir.resolve(att.getName());
+          String sanitizedAttachmentName = sanitizeFilename(att.getName());
+          Path out = attachmentsDir.resolve(sanitizedAttachmentName);
           if (Files.exists(out)) {
             if (overwrite) {
               // Overwrite existing file
@@ -93,7 +90,7 @@ public final class MarkdownHelper {
       md.append("## Attachments\n\n");
       if (!attachmentMap.isEmpty()) {
         for (Map.Entry<String, Path> e : attachmentMap.entrySet()) {
-          Path rel = mdFile.relativize(e.getValue());
+          Path rel = mdFile.getParent().relativize(e.getValue());
           md.append("- [").append(e.getKey()).append("](").append(rel.toString()).append(")\n");
         }
         md.append("\n");
@@ -138,6 +135,31 @@ public final class MarkdownHelper {
     } catch (IOException e) {
       throw new RuntimeException("Failed to create markdown document", e);
     }
+  }
+
+  private static String sanitizeFilename(String input) {
+    Objects.requireNonNull(input, "input cannot be null");
+    Set<String> specialCases = Set.of(".tar.gz", ".tar.xz", ".tar.bz");
+    String ext = null;
+    for (String specialCase : specialCases) {
+      if (input.endsWith(specialCase)) {
+        ext = specialCase;
+        break;
+      }
+    }
+    if (ext == null) {
+      int lastDot = input.lastIndexOf('.');
+      if (lastDot >= 0) {
+        ext = input.substring(lastDot);
+      }
+    }
+    String name = input.substring(0, input.length() - ((ext != null) ? ext.length() : 0));
+
+    String sanitized = name.replaceAll("[^a-zA-Z0-9_]", "_");
+    if (ext != null && !ext.isBlank()) {
+      sanitized += ext;
+    }
+    return sanitized;
   }
 
   private static byte[] decodeBase64Safe(String data) {
