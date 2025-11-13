@@ -270,6 +270,16 @@ public final class GoogleHelper {
     return result.getId();
   }
 
+  private String convertMarkdownImagesToLinks(String text) {
+    if (text == null || text.isEmpty()) {
+      return text;
+    }
+
+    Pattern markdownImagePattern = Pattern.compile("!\\[(.*?)\\]\\((.*?)\\)");
+    Matcher matcher = markdownImagePattern.matcher(text);
+    return matcher.replaceAll("[$2]($2)");
+  }
+
   private String fixTaigaLinks(String inputText, Map<String, String> attachmentMap) {
     if (inputText == null || inputText.isEmpty() || attachmentMap == null || attachmentMap.isEmpty()) {
       return inputText;
@@ -511,6 +521,7 @@ public final class GoogleHelper {
         index = insertText.apply("\n", index);
         String body = c.getComment() != null ? c.getComment() : "";
         body = fixTaigaLinks(body, attachmentUrls);
+        body = convertMarkdownImagesToLinks(body);
         index = insertText.apply(body + "\n\n", index);
         TextStyle unbold = new TextStyle().setBold(false);
         applyTextStyle.accept(unbold, new int[]{bdyStart, bdyStart + body.length() + 3});
