@@ -52,7 +52,7 @@ java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar markdownify --output-directo
 Example (googlify)::
 
 ```
-java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar gooflify --credentials ./credentials.json --oauth-user "oauth-user" --folder-id "1oyQgF5i_Avi1pfZntAJNgAx-iaskQfSj" ./split/1.json
+java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar googlify --credentials ./credentials.json --oauth-user "oauth-user" --folder-id "1oyQgF5i_Avi1pfZntAJNgAx-iaskQfSj" ./split/1.json
 ```
 
 For convenience, you can pass multiple files to 'gooflify' at once. You can do so either manually, or using something like `xargs`.
@@ -60,7 +60,7 @@ For convenience, you can pass multiple files to 'gooflify' at once. You can do s
 Example:
 
 ```
-find ./split -type f -iname '10???' -print0 | xargs -0 java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar gooflify --credentials ./credentials.json --oauth-user "oauth-user" --folder-id "1oyQgF5i_Avi1pfZntAJNgAx-iaskQfSj"
+find ./split -type f -iname '10???' -print0 | xargs -0 java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar googlify --credentials ./credentials.json --oauth-user "oauth-user" --folder-id "1oyQgF5i_Avi1pfZntAJNgAx-iaskQfSj"
 ```
 
 Each doc will take a few seconds to process/create. So it's best to run small batches of files at a time.
