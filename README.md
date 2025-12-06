@@ -19,7 +19,7 @@ mvn clean package
 
 ## Running
 
-There are 3 commands: 'split', 'markdownify', and 'googlify'. Run the help command for more info.
+There are 4 commands: 'split', 'diff', 'markdownify', and 'googlify'. Run the help command for more info.
 
 ```
 java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar --help
@@ -33,7 +33,13 @@ Example:
 java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar split --output-directory ./split ./taiga-raw-export.json
 ```
 
-You can check the difference between two exports by running `diff -qr oldDir newDir`. This will give you a list of files that have changed. That way you don't have to run the 'gooflify' command and reprocess every card. You can just reprocess the new or changed cards.
+You can check the difference between two exports by running 'diff' command. This will give you a list of files that have changed. That way you don't have to run the 'gooflify' command and reprocess every card. You can just reprocess the new or changed cards.
+
+Example:
+
+```
+java -jar target/taiga-util-1.0-SNAPSHOT-runner.jar diff ./splitOld ./splitNew
+```
 
 Next, you'll want to run either 'markdownify', or 'gooflify' on each card.
 
