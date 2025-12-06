@@ -4,7 +4,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.SequencedSet;
 import java.util.Set;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Card {
@@ -93,16 +95,18 @@ public class Card {
 
   @Override
   public String toString() {
-    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-      .append("id", id)
-      .append("subject", subject)
-      .append("details", details)
-      .append("assignees", assignees)
-      .append("created", created)
-      .append("attachments", attachments)
-      .append("comments", comments)
-      .append("tags", tags)
-      .append("status", status)
-      .toString();
+    return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    return EqualsBuilder.reflectionEquals(this, o);
+  }
+
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.reflectionHashCode(this);
   }
 }

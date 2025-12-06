@@ -1,12 +1,16 @@
 package com.joshdreagan.taiga.model;
 
 import java.time.Instant;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Attachment {
 
   private String name;
+  @ToStringExclude
   private String data;
   private String owner;
   private Instant created;
@@ -54,13 +58,21 @@ public class Attachment {
 
   @Override
   public String toString() {
-    Integer dataLength = (data != null) ? data.length() : null;
-    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-      .append("name", name)
-      .append("owner", owner)
-      .append("created", created)
-      .append("updated", updated)
-      .append("dataLength", dataLength)
-      .toString();
+    // Use reflection-based toString and exclude the potentially large 'data' field via annotation
+    return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    // Reflection-based equals reduces boilerplate while including all fields (including 'data')
+    return EqualsBuilder.reflectionEquals(this, o);
+  }
+
+  @Override
+  public int hashCode() {
+    // Reflection-based hashCode consistent with equals
+    return HashCodeBuilder.reflectionHashCode(this);
   }
 }
