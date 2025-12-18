@@ -67,12 +67,12 @@ public class GooglifyCommand implements Runnable {
 
     LOG.info("Processing Taiga user story files: {}", Arrays.toString(userStories.toArray()));
     for (Path userStory : userStories) {
-      LOG.debug("Processing Taiga user story file: {}", userStory);
+      LOG.trace("Processing Taiga user story file: {}", userStory);
       try {
         Card card = taigaHelper.parseUserStoryFile(userStory);
-        LOG.debug("Parsed card: {} (source file: {})", card, userStory);
+        LOG.trace("Parsed card: {} (source file: {})", card, userStory);
         String documentId = googleHelper.createDocument(card, folderId, overwrite);
-        LOG.debug("Created Google Document documentId: {} (source file: {})", documentId, userStory);
+        LOG.trace("Created Google Document documentId: {} (source file: {})", documentId, userStory);
         LOG.debug("Successfully processed Taiga user story file: {}", userStory);
       } catch (Exception e) {
         throw new RuntimeException("Failed to process Taiga user story from file: " + userStory, e);

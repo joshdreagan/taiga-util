@@ -96,31 +96,32 @@ public class DiffCommand implements Runnable {
 
       // Added: in new but not in old
       for (String name : newNames) {
-        if (!name.endsWith(EXTENSION)) {
-          skipped.add(newFiles.get(name));
-          continue;
-        }
         if (!oldNames.contains(name)) {
+          if (!name.endsWith(EXTENSION)) {
+            skipped.add(newFiles.get(name));
+            continue;
+          }
           added.add(newFiles.get(name));
         }
       }
       // Removed: in old but not in new
       for (String name : oldNames) {
-        if (!name.endsWith(EXTENSION)) {
-          skipped.add(newFiles.get(name));
-          continue;
-        }
         if (!newNames.contains(name)) {
+          if (!name.endsWith(EXTENSION)) {
+            skipped.add(oldFiles.get(name));
+            continue;
+          }
           removed.add(oldFiles.get(name));
         }
       }
       // Modified: present in both
       for (String name : newNames) {
-        if (!name.endsWith(EXTENSION)) {
-          skipped.add(newFiles.get(name));
-          continue;
-        }
         if (oldNames.contains(name)) {
+          if (!name.endsWith(EXTENSION)) {
+            skipped.add(oldFiles.get(name));
+            skipped.add(newFiles.get(name));
+            continue;
+          }
           Path oldFile = oldFiles.get(name);
           Path newFile = newFiles.get(name);
           if (diffFiles(oldFile, newFile)) {
